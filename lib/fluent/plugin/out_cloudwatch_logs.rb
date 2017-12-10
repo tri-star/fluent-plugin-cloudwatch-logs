@@ -4,6 +4,8 @@ require 'thread'
 module Fluent
   require 'fluent/mixin/config_placeholders'
 
+  require 'yajl'
+
   class CloudwatchLogsOutput < BufferedOutput
     Plugin.register_output('cloudwatch_logs', self)
 
@@ -149,7 +151,7 @@ module Fluent
           if @message_keys
             message = @message_keys.split(',').map {|k| record[k].to_s }.join(' ')
           else
-            message = record.to_json
+            message = Yajl.dump(record)
           end
 
           if @max_message_length
